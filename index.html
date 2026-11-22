@@ -1,0 +1,664 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>一键检索&amp;工具入口（JUN大创版）</title>
+<style>
+:root{
+  --bg:#F5F7FA; --card:#FFFFFF; --ink:#0F172A; --body:#475569; --muted:#64748B;
+  --line:#E2E8F0; --line-soft:#EEF2F6;
+  --blue:#2563EB; --blue-bg:#EFF6FF; --indigo:#4F46E5; --teal:#0D9488; --teal-bg:#F0FDFA;
+  --amber:#D97706; --amber-bg:#FFFBEB; --violet:#7C3AED;
+  --lit:#34495E; --lit-line:#415A72; --lit-hover:#3D566F; --lit-text:#D5DFE9;
+  --data:#F1F5F9; --topic:#E9EFF5; --topic-line:#D3DFEA;
+  --shadow:0 6px 18px rgba(15,23,42,.06);
+}
+*{box-sizing:border-box}
+html{-webkit-font-smoothing:antialiased}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Microsoft YaHei","Segoe UI",system-ui,sans-serif;font-size:14px;line-height:1.65}
+button{font-family:inherit}
+.wrap{max-width:1140px;margin:0 auto;padding:0 24px}
+
+/* hero */
+.hero{background:#fff;border-bottom:1px solid var(--line);position:relative}
+.hero::before{content:"";display:block;height:3px;background:linear-gradient(90deg,var(--blue),var(--teal),var(--amber))}
+.hero .inner{max-width:1140px;margin:0 auto;padding:44px 24px 34px;display:grid;grid-template-columns:1fr auto;gap:36px;align-items:end}
+.eyebrow{font-size:10.5px;letter-spacing:2.6px;color:var(--blue);text-transform:uppercase;font-weight:600}
+h1{font-size:32px;line-height:1.28;letter-spacing:.6px;margin:10px 0 8px;font-weight:700}
+.lede{margin:0;font-size:13.5px;color:var(--body);max-width:600px}
+.stats{display:flex;gap:10px}
+.stat{border:1px solid var(--line);border-radius:12px;padding:10px 14px;min-width:86px;background:#fff}
+.stat b{display:block;font-size:20px;line-height:1.2;font-weight:700}
+.stat span{font-size:10px;color:var(--muted);letter-spacing:.8px}
+.stat.s1{background:var(--blue-bg);border-color:#DBEAFE}.stat.s1 b{color:var(--blue)}
+.stat.s2{background:var(--teal-bg);border-color:#CCFBF1}.stat.s2 b{color:var(--teal)}
+.stat.s3{background:var(--amber-bg);border-color:#FDE68A}.stat.s3 b{color:var(--amber)}
+
+/* sections */
+.sec{padding:42px 0 4px}
+.sec-head{display:flex;align-items:flex-end;gap:14px;padding-bottom:12px;border-bottom:1px solid var(--line);margin-bottom:20px}
+.sec-head .num{font-family:Consolas,monospace;font-size:12px;letter-spacing:1px;padding-bottom:4px;font-weight:600}
+.sec-head h2{font-size:20px;margin:0;font-weight:700;letter-spacing:.3px}
+.sec-head p{margin:0 0 3px auto;font-size:12px;color:var(--muted);max-width:520px;text-align:right}
+.sec-1 .num{color:var(--blue)} .sec-2 .num{color:var(--indigo)} .sec-3 .num{color:var(--teal)}
+.sec-4 .num{color:var(--amber)} .sec-5 .num{color:var(--violet)}
+.subhead{display:flex;align-items:center;gap:10px;margin:24px 0 10px;font-size:12px;color:var(--muted);letter-spacing:1px}
+.subhead::before{content:"";width:16px;height:1px;background:#CBD5E1}
+.subhead b{color:var(--ink);font-size:12.5px;letter-spacing:.5px}
+.subhead em{font-style:normal;font-size:10px;color:#0F766E;background:var(--teal-bg);border:1px solid #CCFBF1;border-radius:4px;padding:1px 7px;letter-spacing:0}
+
+/* workbench */
+.bench{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:20px 20px 16px}
+.field{display:grid;grid-template-columns:78px 1fr auto auto;gap:10px;align-items:center;margin-bottom:10px}
+.field label{font-size:12px;color:var(--muted)}
+.field input{height:42px;border:1px solid var(--line);border-radius:9px;padding:0 14px;font-size:13.5px;color:var(--ink);background:#fff;outline:none;min-width:0}
+.field input:focus{border-color:#93C5FD;box-shadow:0 0 0 3px rgba(37,99,235,.10)}
+.btn{height:34px;padding:0 14px;border-radius:8px;border:1px solid var(--line);background:#fff;font-size:12px;color:var(--ink);cursor:pointer;white-space:nowrap;transition:.15s}
+.btn:hover{border-color:#CBD5E1;background:#F8FAFC}
+.btn.primary{background:var(--blue);border-color:var(--blue);color:#fff}
+.btn.primary:hover{background:#1D4ED8;border-color:#1D4ED8}
+.btn.sm{height:29px;padding:0 10px;font-size:11.5px}
+
+.cats{display:grid;grid-template-columns:repeat(4,1fr);gap:9px;margin-top:14px}
+.cat{position:relative;background:#fff;border:1px solid var(--line);border-radius:10px;padding:11px 12px;cursor:default;transition:.15s}
+.cat:hover,.cat.open{border-color:#BFDBFE;box-shadow:var(--shadow);z-index:6}
+.cat.hit{border-color:#93C5FD;background:var(--blue-bg)}
+.cat-name{font-size:12.5px;font-weight:600;display:flex;justify-content:space-between;align-items:center}
+.cat-name i{font-style:normal;font-size:10px;color:#94A3B8;font-weight:400}
+.cat-desc{font-size:10.5px;color:var(--muted);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.menu{display:none;position:absolute;left:-1px;top:calc(100% + 6px);width:min(360px,90vw);background:#fff;border:1px solid #BFDBFE;border-radius:10px;padding:9px;box-shadow:0 16px 32px rgba(15,23,42,.12);flex-wrap:wrap;gap:6px}
+.cat:hover .menu,.cat.open .menu{display:flex}
+.menu button{border:1px solid var(--line);background:#F8FAFC;border-radius:6px;padding:5px 9px;font-size:11.5px;color:var(--body);cursor:pointer}
+.menu button:hover{background:var(--blue);color:#fff;border-color:var(--blue)}
+
+.decompose{margin-top:16px;padding-top:14px;border-top:1px solid var(--line-soft);display:grid;grid-template-columns:1fr auto auto;gap:10px;align-items:center}
+.decompose input{height:42px;border:1px solid var(--line);border-radius:9px;padding:0 14px;font-size:13px;outline:none;background:#fff;min-width:0}
+.decompose input:focus{border-color:#93C5FD;box-shadow:0 0 0 3px rgba(37,99,235,.10)}
+.result{grid-column:1/-1;display:flex;gap:7px;flex-wrap:wrap;align-items:center;min-height:20px}
+.result .hint{font-size:11.5px;color:var(--muted)}
+.tag{display:inline-flex;align-items:center;gap:6px;font-size:11px;background:#F1F5F9;border:1px solid #E2E8F0;border-radius:5px;padding:3px 8px;color:var(--body)}
+.tag b{color:var(--ink);font-weight:600}
+.tag i{font-style:normal;color:#94A3B8;cursor:pointer}
+.tag i:hover{color:#DC2626}
+.note{display:flex;margin-top:12px;padding:10px 14px;border-left:3px solid var(--blue);background:var(--blue-bg);border-radius:0 8px 8px 0;font-size:11.5px;color:#1E40AF}
+.note b{color:#1D4ED8}
+
+/* link cards */
+.grid{display:grid;gap:10px}
+.grid.g3{grid-template-columns:repeat(3,1fr);grid-auto-rows:1fr}
+.grid.g4{grid-template-columns:repeat(4,1fr);grid-auto-rows:1fr}
+.grid.g2{grid-template-columns:repeat(2,1fr);grid-auto-rows:1fr}
+.lcard{display:flex;gap:11px;align-items:flex-start;background:var(--card);border:1px solid var(--line);border-radius:11px;padding:13px 14px;text-decoration:none;cursor:pointer;transition:.15s;min-height:74px;text-align:left}
+.lcard:hover{border-color:#BFDBFE;box-shadow:var(--shadow);transform:translateY(-1px)}
+.lcard:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
+.lcard .ico{width:30px;height:30px;border-radius:8px;background:#F1F5F9;display:flex;align-items:center;justify-content:center;flex:none;overflow:hidden;margin-top:1px}
+.lcard .ico img{width:20px;height:20px;object-fit:contain;display:block}
+.lcard .ico span{font-size:12px;font-weight:700;color:#64748B}
+.lcard .tx{min-width:0}
+.lcard .tx b{display:block;font-size:12.8px;font-weight:600;color:var(--ink);line-height:1.45}
+.lcard .tx small{display:block;font-size:11px;color:var(--muted);line-height:1.5;margin-top:1px}
+button.lcard{width:100%;font-family:inherit}
+.lcard.dark{background:var(--lit);border-color:var(--lit-line);color:#fff}
+.lcard.dark .tx b{color:#fff}
+.lcard.dark .tx small{color:var(--lit-text)}
+.lcard.dark .ico{background:rgba(255,255,255,.94)}
+.lcard.dark:hover{background:var(--lit-hover);border-color:#5C7793;box-shadow:0 8px 20px rgba(28,44,60,.20)}
+.lcard.data{background:var(--data);border-color:#E2E8F0}
+.lcard.data:hover{background:#EAF0F5;border-color:#C7D6E3}
+
+/* topics */
+.topics{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.topic{background:var(--topic);border:1px solid var(--topic-line);border-radius:11px;padding:14px 16px;cursor:pointer;transition:.15s}
+.topic:hover{border-color:#AFC2D4;box-shadow:var(--shadow)}
+.topic .tname{font-size:12.8px;font-weight:600;display:flex;align-items:center;gap:8px}
+.topic .tname::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--indigo);flex:none}
+.topic code{display:block;font-family:Consolas,monospace;font-size:10.8px;color:#64748B;margin-top:6px;line-height:1.55;word-break:break-word}
+
+/* campus */
+.steps{display:grid;grid-template-columns:1fr 1fr;gap:0 40px}
+.step{padding:11px 0;border-bottom:1px solid var(--line-soft);font-size:11.5px;color:var(--body)}
+.step b{display:block;color:var(--ink);font-size:12px;margin-bottom:1px}
+.step a{color:#1D4ED8;text-decoration:none}
+.step a:hover{text-decoration:underline}
+
+/* tools */
+/* tools: 左侧大类栏 + 右侧每行两张长卡片，全部展开 */
+.tool-row{display:grid;grid-template-columns:186px 1fr;gap:26px;align-items:start;padding:15px 0;border-bottom:1px solid var(--line-soft)}
+.tool-row:first-child{padding-top:4px}
+.tool-row:last-child{border-bottom:0;padding-bottom:4px}
+.tool-row .tcat{position:relative;padding:13px 0 0 13px;font-size:12.8px;font-weight:600;color:var(--ink);letter-spacing:.3px}
+.tool-row .tcat::before{content:"";position:absolute;left:0;top:16px;width:3px;height:14px;border-radius:2px;background:var(--amber)}
+.tool-row .titems{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+
+/* code */
+.codewrap{position:relative;margin:0 0 12px}
+.code{background:#F8FAFC;border:1px solid var(--line);border-left:3px solid var(--violet);border-radius:8px;padding:13px 74px 13px 15px;font-family:Consolas,monospace;font-size:11.2px;line-height:1.7;white-space:pre-wrap;color:#334155;margin:0}
+.codewrap .btn{position:absolute;right:8px;top:8px}
+
+/* footer */
+.foot{margin-top:44px;border-top:1px solid var(--line);padding:20px 0 34px;font-size:11px;color:var(--muted);line-height:1.9}
+.foot b{color:var(--ink)}
+.foot .sign{color:var(--ink);font-weight:600}
+.toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%) translateY(14px);background:#0F172A;color:#fff;padding:9px 16px;border-radius:8px;font-size:12px;opacity:0;transition:.2s;pointer-events:none;z-index:99;max-width:80vw}
+.toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
+
+@media (max-width:1000px){
+  .grid.g3,.grid.g4{grid-template-columns:repeat(2,1fr)}
+  .hero .inner{grid-template-columns:1fr}.stats{justify-content:flex-start}
+  .tool-row{grid-template-columns:1fr;gap:8px}
+  .tool-row .tcat{padding-top:2px}
+}
+@media (max-width:680px){
+  h1{font-size:25px}.grid.g3,.grid.g4,.grid.g2,.titems{grid-template-columns:1fr}
+  .cats{grid-template-columns:1fr 1fr}.topics,.steps{grid-template-columns:1fr}
+  .field{grid-template-columns:1fr 1fr}.field label{grid-column:1/-1}
+  .decompose{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="inner">
+    <div>
+      <div class="eyebrow">JUN 大创 · 检索与工具导航</div>
+      <h1>一键检索&amp;工具入口（JUN大创版）</h1>
+      <p class="lede">选一次检索词，全站联动。文献、数据、工具按用途归位；点卡片直接进入，链接在点击时生成。</p>
+    </div>
+    <div class="stats">
+      <div class="stat s1"><b id="mSites">15</b><span>文献入口</span></div>
+      <div class="stat s2"><b>8</b><span>检索大类</span></div>
+      <div class="stat s3"><b>16</b><span>科研工具</span></div>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+
+<!-- 01 -->
+<section class="sec sec-1">
+  <div class="sec-head"><span class="num">01</span><h2>检索词工作台</h2><p>大类悬停选小类；也可以把整句选题粘进来，自动拆词</p></div>
+
+  <div class="bench">
+    <div class="field">
+      <label>英文检索</label>
+      <input type="text" id="enInput" value="home energy management model predictive control battery" placeholder="energy storage revenue arbitrage">
+      <button class="btn sm" data-copy="enInput">复制</button>
+      <button class="btn sm" data-clear="enInput">清空</button>
+    </div>
+    <div class="field">
+      <label>中文检索</label>
+      <input type="text" id="cnInput" value="户用光伏 储能 优化调度" placeholder="储能 收益 现货 调频">
+      <button class="btn sm" data-copy="cnInput">复制</button>
+      <button class="btn sm" data-clear="cnInput">清空</button>
+    </div>
+
+    <div class="cats" id="cats"></div>
+
+    <div class="decompose">
+      <input type="text" id="topicInput" placeholder="粘贴选题，例如：面向动态电价的工商业储能收益与报价决策研究">
+      <button class="btn primary" id="decomposeBtn">拆解成检索词</button>
+      <button class="btn" id="resetDecompose">恢复默认</button>
+      <div class="result" id="decomposeResult"></div>
+    </div>
+  </div>
+  <div class="note"><div><b>跳转说明：</b>知网、百度学术会拦截带参数的直达链接，本页对它们打开搜索页并自动复制检索词；其余站点直接进结果页。</div></div>
+</section>
+
+<!-- 02 -->
+<section class="sec sec-2">
+  <div class="sec-head"><span class="num">02</span><h2>文献搜索</h2><p>中英文分区；主流入口与专题方向分开；先登录再下载</p></div>
+
+  <div class="subhead"><b>英文文献 · 主流入口</b></div>
+  <div class="grid g3" id="enSites"></div>
+
+  <div class="subhead"><b>中文文献 · 主流入口</b><em>需校园网 / WebVPN</em></div>
+  <div class="grid g3" id="cnSites"></div>
+
+  <div class="subhead"><b>适配我们的专题方向</b></div>
+  <div class="topics" id="topics"></div>
+
+  <div class="subhead"><b>先登录，再下载</b></div>
+  <div class="steps">
+    <div class="step"><b>① 校内</b>连上校园网（eduroam / JNU 无线），直接点上方中文库，页面显示「机构用户」即可免费下载。</div>
+    <div class="step"><b>② 校外 · WebVPN</b>先登录 <a href="https://webvpn.jiangnan.edu.cn/" target="_blank" rel="noopener">webvpn.jiangnan.edu.cn</a>，再从<a href="https://lib.jiangnan.edu.cn/wzjs.jsp?urltype=tree.TreeTempUrl&wbtreeid=1131" target="_blank" rel="noopener">数据库导航</a>进知网、万方。</div>
+    <div class="step"><b>③ 校外 · CARSI</b>部分库支持统一身份认证，入口：<a href="https://ds.carsi.edu.cn/ds/index.html" target="_blank" rel="noopener">CARSI 联邦认证</a>，用学号登录。</div>
+    <div class="step"><b>④ 还是下不到</b>走<a href="https://lib.jiangnan.edu.cn/wxzy/xwfw.htm" target="_blank" rel="noopener">图书馆文献传递</a>或 NSTL 按篇申请，通常几元。</div>
+  </div>
+</section>
+
+<!-- 03 -->
+<section class="sec sec-3">
+  <div class="sec-head"><span class="num">03</span><h2>数据与政策</h2><p>先定数据关键词，再点开对应平台</p></div>
+
+  <div class="bench" style="margin-bottom:18px">
+    <div class="field" style="margin-bottom:9px">
+      <label>数据检索</label>
+      <input type="text" id="dataInput" value="工商业 需量电费 负荷曲线" placeholder="储能 现货 出清价 / 光伏 出力 辐照">
+      <button class="btn sm" data-copy="dataInput">复制</button>
+      <button class="btn sm" data-copy-open="dataInput">复制数据词</button>
+    </div>
+    <div class="result" id="dataChips">
+      <span class="hint">常用：</span>
+      <button class="btn sm" data-data="全社会用电量 分行业">全社会用电量</button>
+      <button class="btn sm" data-data="现货市场 出清价 电价">现货出清价</button>
+      <button class="btn sm" data-data="光伏 出力 辐照 气象">光伏出力</button>
+      <button class="btn sm" data-data="储能 装机 利用率">储能装机</button>
+      <button class="btn sm" data-data="碳排放 因子 电网">碳排放因子</button>
+    </div>
+  </div>
+
+  <div class="subhead"><b>国内平台</b></div>
+  <div class="grid g3" id="dataCn"></div>
+
+  <div class="subhead"><b>国际平台</b></div>
+  <div class="grid g4" id="dataIntl"></div>
+
+  <div class="subhead"><b>企业与市场数据</b></div>
+  <div class="grid g4" id="dataBiz"></div>
+
+  <div class="subhead"><b>政策与规则</b></div>
+  <div class="grid g3" id="policy"></div>
+</section>
+
+<!-- 04 -->
+<section class="sec sec-4">
+  <div class="sec-head"><span class="num">04</span><h2>实用工具</h2><p>左侧选类别，右侧是该类别的入口</p></div>
+  <div class="tools" id="tools"></div>
+</section>
+
+<!-- 05 -->
+<section class="sec sec-5">
+  <div class="sec-head"><span class="num">05</span><h2>可直接粘贴的检索式</h2><p>复制到 Google Scholar、IEEE 或知网的高级检索</p></div>
+
+  <div class="codewrap"><button class="btn sm" data-copy-block="b1">复制</button>
+  <pre class="code" id="b1">("home energy management" OR "residential energy management")
+AND ("model predictive control" OR "stochastic optimization")
+AND (battery OR "energy storage")
+AND ("dynamic tariff" OR "time-of-use" OR "real-time pricing")</pre></div>
+
+  <div class="codewrap"><button class="btn sm" data-copy-block="b2">复制</button>
+  <pre class="code" id="b2">("energy storage" OR "battery storage")
+AND (revenue OR arbitrage)
+AND ("frequency regulation" OR "spot market")</pre></div>
+
+  <div class="codewrap"><button class="btn sm" data-copy-block="b3">复制</button>
+  <pre class="code" id="b3">(photovoltaic OR PV)
+AND ("performance ratio" OR "power loss" OR "fault diagnosis")
+AND ("operation and maintenance" OR O&amp;M)</pre></div>
+</section>
+
+<footer class="foot">
+  <b>免责声明</b>　本页仅汇总公开检索入口与工具链接，不代理、不存储、不提供任何文献全文；平台可用性、收费与登录要求以官方为准。下载与使用请遵守学校规定及出版商条款，切勿用于商业传播。<br>
+  <span class="sign">创作人：卓易同学</span>　·　JUN 大创版　·　入口如有变更，以各平台官网为准。
+</footer>
+</main>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const $ = id => document.getElementById(id);
+const enc = s => encodeURIComponent(s.trim());
+let toastTimer = null;
+function toast(msg){
+  const t=$('toast'); t.textContent=msg; t.classList.add('on');
+  clearTimeout(toastTimer); toastTimer=setTimeout(()=>t.classList.remove('on'),2000);
+}
+function copyText(text){
+  if(!text) return Promise.reject(new Error('empty'));
+  if(navigator.clipboard && window.isSecureContext) return navigator.clipboard.writeText(text);
+  return new Promise((resolve,reject)=>{
+    const ta=document.createElement('textarea'); ta.value=text;
+    ta.style.position='fixed'; ta.style.opacity='0'; document.body.appendChild(ta); ta.select();
+    try{ document.execCommand('copy'); resolve(); }catch(e){ reject(e); }
+    document.body.removeChild(ta);
+  });
+}
+function setQuery(lang,q){
+  const el = lang==='en' ? $('enInput') : $('cnInput');
+  el.value=q; el.style.background='#EFF6FF';
+  setTimeout(()=>{ el.style.background='#fff'; },500);
+}
+
+/* 图标：优先 favicon.im，失败退回站点自己的 favicon，再失败显示首字母 */
+function icon(domain, label){
+  return `<span class="ico"><img src="https://favicon.im/${domain}" alt="" loading="lazy"
+    onerror="this.onerror=null;this.src='https://${domain}/favicon.ico';this.addEventListener('error',()=>{this.style.display='none';this.parentNode.innerHTML='<span>${label}</span>';})"></span>`;
+}
+
+/* ============ 检索大类 ============ */
+const CATS = [
+  {id:'pv', name:'户用光储', desc:'家庭光伏、储能与负荷', subs:[
+    {zh:'家庭能量管理', en:'home energy management'},
+    {zh:'光伏自消费', en:'photovoltaic self-consumption'},
+    {zh:'阳台光伏', en:'balcony photovoltaic'},
+    {zh:'家庭储能', en:'home battery storage'},
+    {zh:'备电与停电', en:'backup power outage'}]},
+  {id:'market', name:'电力市场与电价', desc:'现货、电价、需量与辅助服务', subs:[
+    {zh:'现货市场', en:'spot market'},
+    {zh:'分时电价', en:'time-of-use tariff'},
+    {zh:'需量电费', en:'demand charge'},
+    {zh:'调频辅助服务', en:'frequency regulation'},
+    {zh:'容量补偿', en:'capacity compensation'}]},
+  {id:'storage', name:'储能与电池', desc:'收益、退化、安全与配置', subs:[
+    {zh:'储能收益', en:'energy storage revenue'},
+    {zh:'电池退化', en:'battery degradation'},
+    {zh:'电池健康状态', en:'battery state of health'},
+    {zh:'容量配置', en:'storage sizing'},
+    {zh:'储能安全', en:'battery safety'}]},
+  {id:'om', name:'光伏运维', desc:'损失归因、诊断与清洗', subs:[
+    {zh:'损失归因', en:'power loss attribution'},
+    {zh:'性能比', en:'performance ratio'},
+    {zh:'故障诊断', en:'fault diagnosis'},
+    {zh:'清洗决策', en:'soiling cleaning'},
+    {zh:'发电量预测', en:'PV power forecasting'}]},
+  {id:'ev', name:'充电与交通', desc:'光储充、选址与车网互动', subs:[
+    {zh:'光储充一体站', en:'PV storage charging station'},
+    {zh:'充电站选址', en:'charging station siting'},
+    {zh:'有序充电', en:'coordinated charging'},
+    {zh:'车网互动', en:'vehicle-to-grid'},
+    {zh:'充电需求', en:'charging demand'}]},
+  {id:'grid', name:'配电网与台区', desc:'承载力、电压与选址', subs:[
+    {zh:'承载力', en:'hosting capacity'},
+    {zh:'电压治理', en:'voltage regulation'},
+    {zh:'储能选址', en:'energy storage siting'},
+    {zh:'潮流计算', en:'power flow'},
+    {zh:'配电台区', en:'distribution transformer area'}]},
+  {id:'method', name:'方法与工具', desc:'预测、优化与强化学习', subs:[
+    {zh:'模型预测控制', en:'model predictive control'},
+    {zh:'随机优化', en:'stochastic optimization'},
+    {zh:'强化学习', en:'reinforcement learning'},
+    {zh:'数字孪生', en:'digital twin'},
+    {zh:'可解释性', en:'explainability'}]},
+  {id:'policy', name:'政策与标准', desc:'并网、补贴与碳', subs:[
+    {zh:'两个细则', en:'grid code assessment'},
+    {zh:'并网标准', en:'grid connection standard'},
+    {zh:'补贴与电价', en:'subsidy tariff'},
+    {zh:'碳核算', en:'carbon accounting'},
+    {zh:'绿证绿电', en:'green certificate'}]}
+];
+
+/* ============ 站点 ============ */
+const SITES = {
+  gs:      {name:'Google Scholar', text:'覆盖最全，有 PDF 直接下', domain:'scholar.google.com', url:q=>'https://scholar.google.com/scholar?hl=en&q='+enc(q)},
+  wos:     {name:'Web of Science', text:'综述与高被引筛选最好用', domain:'webofscience.com', url:q=>'https://www.webofscience.com/wos/woscc/basic-search?queryText='+enc(q)},
+  ieee:    {name:'IEEE Xplore', text:'电力系统主战场 TSG / TPWRS / TSTE', domain:'ieeexplore.ieee.org', url:q=>'https://ieeexplore.ieee.org/search/searchresult.jsp?queryText='+enc(q)+'&highlight=true&returnFacets=ALL&returnType=SEARCH'},
+  sd:      {name:'ScienceDirect', text:'Applied Energy / Energy / Renewable Energy', domain:'sciencedirect.com', url:q=>'https://www.sciencedirect.com/search?qs='+enc(q)},
+  springer:{name:'SpringerLink', text:'综述与工程类书籍章节', domain:'springer.com', url:q=>'https://link.springer.com/search?query='+enc(q)},
+  arxiv:   {name:'arXiv', text:'预印本，前沿快，不用等见刊', domain:'arxiv.org', url:q=>'https://arxiv.org/search/?searchtype=all&query='+enc(q)},
+  s2:      {name:'Semantic Scholar', text:'AI 摘要与引用脉络，Open PDF 可下', domain:'semanticscholar.org', url:q=>'https://www.semanticscholar.org/search?q='+enc(q)},
+  core:    {name:'CORE', text:'机构仓库聚合，找作者版与预印本', domain:'core.ac.uk', url:q=>'https://core.ac.uk/search?q='+enc(q)},
+  openalex:{name:'OpenAlex', text:'开放图谱，标 OA 的可下，免 Key', domain:'openalex.org', url:q=>'https://openalex.org/works?search='+enc(q)},
+  doaj:    {name:'DOAJ', text:'纯开放获取期刊目录，全部免费', domain:'doaj.org', url:()=>'https://doaj.org/'},
+  scopus:  {name:'Scopus', text:'摘要与引文数据库，查综述与引用关系', domain:'scopus.com', url:q=>'https://www.scopus.com/results/results.uri?src=s&sot=b&sdt=b&s=TITLE-ABS-KEY('+enc(q)+')'},
+  wiley:   {name:'Wiley Online Library', text:'期刊与会议，部分能源刊在此', domain:'onlinelibrary.wiley.com', url:q=>'https://onlinelibrary.wiley.com/action/doSearch?AllField='+enc(q)},
+  paper:   {name:'中国科技论文在线', text:'免费预印本，工程类居多', domain:'paper.edu.cn', url:()=>'https://www.paper.edu.cn/'},
+  cnki:    {name:'中国知网', text:'校内显示机构用户，会拦截直达链接', domain:'cnki.net', url:()=>'https://kns.cnki.net/kns8s/defaultresult/index', copy:true},
+  wanfang: {name:'万方', text:'学位论文全，直达链接可带关键词', domain:'wanfangdata.com.cn', url:q=>'https://s.wanfangdata.com.cn/paper?q='+enc(q)},
+  cqvip:   {name:'维普', text:'期刊覆盖互补，适合补漏', domain:'cqvip.com', url:q=>'http://qikan.cqvip.com/Qikan/Search/Index?key='+enc(q)},
+  baidu:   {name:'百度学术', text:'摘要与被引免费看', domain:'xueshu.baidu.com', url:q=>'https://xueshu.baidu.com/s?wd='+enc(q)},
+  duxiu:   {name:'读秀', text:'图书与章节检索，需校园网', domain:'duxiu.com', url:()=>'https://www.duxiu.com/', copy:true}
+};
+const CN_KEYS = ['cnki','wanfang','cqvip','baidu','duxiu','paper'];
+const langOf = k => CN_KEYS.includes(k) ? 'cn' : 'en';
+
+function openSite(key, qOverride){
+  const site = SITES[key];
+  if(!site){ toast('入口未配置'); return; }
+  const q = (qOverride || (langOf(key)==='en' ? $('enInput').value : $('cnInput').value) || '').trim();
+  if(!q){ toast('先在上方输入检索词'); return; }
+  window.open(site.url(q), '_blank', 'noopener');
+  if(site.copy){
+    copyText(q).then(()=>toast(site.name + ' 已打开，检索词已复制')).catch(()=>toast(site.name + ' 已打开，请手动粘贴'));
+  }else{
+    toast(site.name + ' 已按「' + (q.length>22?q.slice(0,22)+'…':q) + '」打开');
+  }
+}
+
+$('cats').innerHTML = CATS.map(c=>`
+  <div class="cat" data-cat="${c.id}">
+    <div class="cat-name">${c.name}<i>${c.subs.length}</i></div>
+    <div class="cat-desc">${c.desc}</div>
+    <div class="menu">${c.subs.map((s,i)=>`<button data-cat="${c.id}" data-i="${i}">${s.zh}</button>`).join('')}</div>
+  </div>`).join('');
+
+$('cats').addEventListener('click', e=>{
+  const btn = e.target.closest('.menu button');
+  if(btn){
+    const cat = CATS.find(c=>c.id===btn.dataset.cat);
+    const s = cat.subs[+btn.dataset.i];
+    setQuery('zh', s.zh); setQuery('en', s.en);
+    document.querySelectorAll('.cat').forEach(x=>x.classList.remove('open'));
+    toast('已填入：' + s.zh + ' / ' + s.en);
+    return;
+  }
+  const card = e.target.closest('.cat');
+  if(card && window.matchMedia('(max-width:680px)').matches){
+    document.querySelectorAll('.cat').forEach(x=>{ if(x!==card) x.classList.remove('open'); });
+    card.classList.toggle('open');
+  }
+});
+
+/* ============ 选题拆解 ============ */
+const DICT = [];
+CATS.forEach(c=>c.subs.forEach(s=>DICT.push({zh:s.zh, en:s.en, cat:c.id})));
+DICT.push(
+  {zh:'储能收益', en:'energy storage revenue', cat:'storage'},
+  {zh:'报价', en:'bidding strategy', cat:'market'},
+  {zh:'工商业', en:'commercial and industrial', cat:'market'},
+  {zh:'光伏', en:'photovoltaic', cat:'pv'},
+  {zh:'运维', en:'operation and maintenance', cat:'om'},
+  {zh:'收益测算', en:'revenue assessment', cat:'market'},
+  {zh:'投资决策', en:'investment decision', cat:'market'},
+  {zh:'虚拟电厂', en:'virtual power plant', cat:'grid'},
+  {zh:'聚合', en:'aggregation', cat:'grid'},
+  {zh:'微电网', en:'microgrid', cat:'grid'},
+  {zh:'零碳园区', en:'zero carbon park', cat:'policy'},
+  {zh:'碳足迹', en:'carbon footprint', cat:'policy'}
+);
+let matched = [];
+
+function decompose(){
+  const text = $('topicInput').value.trim();
+  if(!text){ toast('先输入一个选题'); return; }
+  const lower = text.toLowerCase();
+  const found = DICT.filter(d=>text.includes(d.zh) || (d.en && lower.includes(d.en.toLowerCase())));
+  const seen = new Set(); const uniq = [];
+  found.forEach(d=>{ if(!seen.has(d.zh)){ seen.add(d.zh); uniq.push(d); } });
+  matched = uniq.slice(0,6);
+  if(matched.length){
+    setQuery('zh', matched.map(d=>d.zh).join(' '));
+    setQuery('en', matched.map(d=>d.en).join(' '));
+    document.querySelectorAll('.cat').forEach(el=>el.classList.toggle('hit', matched.some(d=>d.cat===el.dataset.cat)));
+  }else{
+    const clean = text.replace(/[，。；、,:;:!?（）()《》“”"']/g,' ')
+                      .replace(/基于|面向|一种|研究|设计|系统|方法|的|与|和|及|在|下/g,' ')
+                      .replace(/\s+/g,' ').trim();
+    setQuery('zh', clean);
+    document.querySelectorAll('.cat').forEach(el=>el.classList.remove('hit'));
+    toast('未匹配到专业词，已用清洗后的原句');
+  }
+  renderResult();
+}
+function renderResult(){
+  const box = $('decomposeResult');
+  if(!matched.length){
+    box.innerHTML = '<span class="hint">粘入选题后点「拆解」，会自动填好中英文并高亮相关大类。</span>';
+    return;
+  }
+  box.innerHTML = '<span class="hint">已识别</span>' +
+    matched.map((d,i)=>`<span class="tag"><b>${d.zh}</b> ${d.en}<i data-rm="${i}">×</i></span>`).join('');
+}
+$('decomposeBtn').addEventListener('click', decompose);
+$('topicInput').addEventListener('keydown', e=>{ if(e.key==='Enter') decompose(); });
+$('resetDecompose').addEventListener('click', ()=>{
+  matched = [];
+  document.querySelectorAll('.cat').forEach(el=>el.classList.remove('hit'));
+  $('topicInput').value = '';
+  $('enInput').value = 'home energy management model predictive control battery';
+  $('cnInput').value = '户用光伏 储能 优化调度';
+  renderResult();
+});
+$('decomposeResult').addEventListener('click', e=>{
+  const i = e.target.dataset.rm;
+  if(i === undefined) return;
+  matched.splice(+i,1);
+  if(matched.length){
+    setQuery('zh', matched.map(d=>d.zh).join(' '));
+    setQuery('en', matched.map(d=>d.en).join(' '));
+  }
+  renderResult();
+});
+
+/* ============ 文献卡片 ============ */
+const EN_LIST = ['gs','wos','ieee','sd','springer','arxiv','s2','core','openalex','doaj','scopus','wiley'];
+const CN_LIST = ['cnki','wanfang','cqvip','baidu','duxiu','paper'];
+
+function siteCard(key){
+  const s = SITES[key];
+  return `<button class="lcard dark" data-site="${key}" title="${s.name}">
+    ${icon(s.domain, s.name.slice(0,1))}
+    <span class="tx"><b>${s.name}</b><small>${s.text}</small></span>
+  </button>`;
+}
+$('enSites').innerHTML = EN_LIST.map(siteCard).join('');
+$('cnSites').innerHTML = CN_LIST.map(siteCard).join('');
+$('mSites').textContent = EN_LIST.length + CN_LIST.length;
+
+/* ============ 专题 ============ */
+const TOPICS = [
+  {name:'储能收益与报价', en:'energy storage revenue arbitrage frequency regulation', cn:'储能 收益 现货 调频'},
+  {name:'光伏损失归因', en:'photovoltaic performance ratio fault diagnosis', cn:'光伏 性能比 故障诊断 损失'},
+  {name:'工商业需量管理', en:'demand charge energy storage commercial building', cn:'工商业 需量电费 储能'},
+  {name:'光储充一体站', en:'PV storage charging station sizing', cn:'光储充 充电站 容量配置'},
+  {name:'台区承载力', en:'hosting capacity distribution network energy storage', cn:'台区 承载力 储能 选址'},
+  {name:'阳台光伏', en:'balcony photovoltaic self-consumption', cn:'阳台光伏 自消费 负荷'}
+];
+$('topics').innerHTML = TOPICS.map((t,i)=>`
+  <div class="topic" data-fill="${i}" role="button" tabindex="0">
+    <div class="tname">${t.name}</div>
+    <code>${t.en}</code>
+  </div>`).join('');
+
+/* ============ 数据与政策 ============ */
+const DATA_CN = [
+  {n:'国家数据局', u:'https://www.nda.gov.cn/', d:'国家数据政策与公共数据开放'},
+  {n:'国家统计局', u:'https://data.stats.gov.cn/', d:'月度与年度宏观数据，用电量在这里'},
+  {n:'国家能源局', u:'https://www.nea.gov.cn/', d:'装机、消纳、并网政策原文'},
+  {n:'中电联', u:'https://www.cec.org.cn/', d:'电力行业统计与年度报告'},
+  {n:'全国碳市场', u:'https://www.cneeex.com/', d:'碳配额与成交数据'},
+  {n:'国家电网', u:'https://www.sgcc.com.cn/', d:'电网数据与新能源云入口'}
+];
+const DATA_INTL = [
+  {n:'IEA', u:'https://www.iea.org/', d:'全球能源统计与情景报告'},
+  {n:'IRENA', u:'https://www.irena.org/', d:'可再生能源装机与成本'},
+  {n:'EIA', u:'https://www.eia.gov/', d:'美国能源数据，API 免 Key'},
+  {n:'ENTSO-E', u:'https://transparency.entsoe.eu/', d:'欧洲电价与发电，需注册 Key'},
+  {n:'AEMO', u:'https://aemo.com.au/', d:'澳洲电力市场与调度数据'},
+  {n:'Ember', u:'https://ember-energy.org/', d:'全球电力结构与碳强度'},
+  {n:'Our World in Data', u:'https://ourworldindata.org/', d:'可视化好的公开数据集'},
+  {n:'World Bank', u:'https://data.worldbank.org/', d:'跨国宏观与能源指标'}
+];
+const DATA_BIZ = [
+  {n:'Wind 万得', u:'https://www.wind.com.cn/', d:'金融与行业数据库，学校可能有账号'},
+  {n:'同花顺 iFinD', u:'https://www.51ifind.com/', d:'行业与公司数据，部分高校可申请'},
+  {n:'企查查', u:'https://www.qcc.com/', d:'企业工商、股权与招投标'},
+  {n:'天眼查', u:'https://www.tianyancha.com/', d:'企业信息与风险，互补查询'}
+];
+const POLICY = [
+  {n:'国家发改委', u:'https://www.ndrc.gov.cn/', d:'电价、储能与产业政策原文'},
+  {n:'国家能源局', u:'https://www.nea.gov.cn/', d:'并网、消纳、辅助服务规则'},
+  {n:'住建部', u:'https://www.mohurd.gov.cn/', d:'建筑节能与光储直柔试点'},
+  {n:'EUR-Lex', u:'https://eur-lex.europa.eu/', d:'欧盟法规原文，查 CBAM/EEG'},
+  {n:'欧盟能源', u:'https://energy.ec.europa.eu/', d:'欧盟能源政策与法规原文'},
+  {n:'FERC', u:'https://www.ferc.gov/', d:'美国电力市场与并网规则'}
+];
+function dataCard(x){
+  let host=''; try{ host = new URL(x.u).hostname.replace(/^www\./,''); }catch(e){}
+  return `<a class="lcard data" href="${x.u}" target="_blank" rel="noopener" title="${x.n}">
+    ${icon(host, x.n.slice(0,1))}
+    <span class="tx"><b>${x.n}</b><small>${x.d}</small></span>
+  </a>`;
+}
+$('dataCn').innerHTML = DATA_CN.map(dataCard).join('');
+$('dataIntl').innerHTML = DATA_INTL.map(dataCard).join('');
+$('dataBiz').innerHTML = DATA_BIZ.map(dataCard).join('');
+$('policy').innerHTML = POLICY.map(dataCard).join('');
+
+/* ============ 工具（左侧分类 + 右侧两列） ============ */
+const TOOL_CATS = [
+  {cat:'文献管理', items:[
+    {n:'Zotero', u:'https://www.zotero.org/', d:'免费开源，抓网页、管 PDF、自动生成参考文献'},
+    {n:'EndNote', u:'https://endnote.com/', d:'学校常买，Word 插件成熟，适合长文档'}]},
+  {cat:'文献阅读', items:[
+    {n:'NotebookLM', u:'https://notebooklm.google.com/', d:'上传 PDF 直接问答，生成摘要与提纲'},
+    {n:'知网研学', u:'https://x.cnki.net/', d:'中文文献管理，知网条目一键导入'}]},
+  {cat:'画图示意', items:[
+    {n:'draw.io', u:'https://app.diagrams.net/', d:'流程图与系统架构图，可导出矢量'},
+    {n:'Excalidraw', u:'https://excalidraw.com/', d:'手绘风格，答辩示意图出得快'}]},
+  {cat:'数据可视化', items:[
+    {n:'ECharts', u:'https://echarts.apache.org/', d:'网页交互图表，Demo 首选'},
+    {n:'Datawrapper', u:'https://www.datawrapper.de/', d:'零代码出新闻级图表'}]},
+  {cat:'论文查重', items:[
+    {n:'CheckJie', u:'https://www.checkjie.com/', d:'初稿自查，价格低；结果仅供参考'},
+    {n:'学校查重', u:'https://lib.jiangnan.edu.cn/', d:'终稿走学校官方通知，不要用野路子'}]},
+  {cat:'代码复现', items:[
+    {n:'GitHub', u:'https://github.com/', d:'找开源实现、管版本，简历也看这个'},
+    {n:'Google Colab', u:'https://colab.research.google.com/', d:'免配置 GPU，跑 Notebook 最快'}]},
+  {cat:'排版写作', items:[
+    {n:'Overleaf', u:'https://www.overleaf.com/', d:'在线 LaTeX，期刊模板直接套'},
+    {n:'Typst', u:'https://typst.app/', d:'比 LaTeX 轻，适合快速排版'}]},
+  {cat:'竞赛平台', items:[
+    {n:'国家级大创平台', u:'http://gjcxcy.bjtu.edu.cn/', d:'历年立项题目，做撞车检查'},
+    {n:'中国国际大学生创新大赛', u:'https://cy.ncss.cn/', d:'报名、赛制与历年金奖项目'}]}
+];
+
+function toolCard(it){
+  let host=''; try{ host = new URL(it.u).hostname.replace(/^www\./,''); }catch(e){}
+  return `<a class="lcard" href="${it.u}" target="_blank" rel="noopener" title="${it.n}">
+    ${icon(host, it.n.slice(0,1))}
+    <span class="tx"><b>${it.n}</b><small>${it.d}</small></span>
+  </a>`;
+}
+$('tools').innerHTML = TOOL_CATS.map(g=>`
+  <div class="tool-row">
+    <div class="tcat">${g.cat}</div>
+    <div class="titems">${g.items.map(toolCard).join('')}</div>
+  </div>`).join('');
+
+/* ============ 交互 ============ */
+document.addEventListener('click', e=>{
+  const siteBtn = e.target.closest('[data-site]');
+  if(siteBtn){ openSite(siteBtn.dataset.site); return; }
+  const fill = e.target.closest('[data-fill]');
+  if(fill){
+    const t = TOPICS[+fill.dataset.fill];
+    setQuery('zh', t.cn); setQuery('en', t.en);
+    toast('已填入检索框：' + t.name);
+    window.scrollTo({top:0, behavior:'smooth'});
+    return;
+  }
+  const copyBtn = e.target.closest('[data-copy]');
+  if(copyBtn){ copyText($(copyBtn.dataset.copy).value).then(()=>toast('已复制')).catch(()=>toast('复制失败')); return; }
+  const copyOpen = e.target.closest('[data-copy-open]');
+  if(copyOpen){ copyText($(copyOpen.dataset.copyOpen).value).then(()=>toast('数据词已复制')).catch(()=>{}); return; }
+  const clearBtn = e.target.closest('[data-clear]');
+  if(clearBtn){ $(clearBtn.dataset.clear).value=''; return; }
+  const blockBtn = e.target.closest('[data-copy-block]');
+  if(blockBtn){
+    copyText($(blockBtn.dataset.copyBlock).innerText).then(()=>{
+      blockBtn.textContent='已复制'; setTimeout(()=>blockBtn.textContent='复制',1200);
+    }).catch(()=>toast('复制失败'));
+    return;
+  }
+  const dataBtn = e.target.closest('[data-data]');
+  if(dataBtn){ $('dataInput').value = dataBtn.dataset.data; toast('已填入数据检索词'); }
+});
+document.addEventListener('keydown', e=>{
+  if((e.key==='Enter'||e.key===' ') && e.target.matches('[data-fill]')){ e.preventDefault(); e.target.click(); }
+});
+renderResult();
+</script>
+</body>
+</html>
